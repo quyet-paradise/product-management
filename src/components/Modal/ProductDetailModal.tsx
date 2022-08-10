@@ -1,7 +1,7 @@
 import { Rating } from '../UI/Rating'
 import { Product } from '../../type/product.type'
 
-export const DefaultModal = ({
+export const ProductDetailModal = ({
   isShow,
   onClose,
   product,

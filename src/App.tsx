@@ -6,6 +6,8 @@ import { SelectBox } from './components/UI/SelectBox'
 import { ProductDetailModal } from './components/Modal/ProductDetailModal'
 import { ProductFormModal } from './components/Modal/ProductFormModal'
 
+import { useNavigate } from 'react-router-dom'
+
 import { Product } from './type/product.type'
 
 export const App = () => {
@@ -21,6 +23,8 @@ export const App = () => {
       count: 0,
     },
   }
+
+  const navigate = useNavigate()
 
   const [products, setProducts] = useState([])
 
@@ -53,6 +57,11 @@ export const App = () => {
 
   const openAddModal = () => {
     setIsEdit(true)
+  }
+
+  const logout = () => {
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'
+    navigate('/login', { replace: true })
   }
 
   useEffect(() => {
@@ -98,6 +107,26 @@ export const App = () => {
         categories={categories}
         handleChangeCategory={handleChangeCategory}
       />
+
+      <button
+        className='absolute top-8 right-0 hover:bg-gray-100 rounded'
+        onClick={logout}
+      >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          className='h-8 w-8'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
+          />
+        </svg>
+      </button>
 
       {products.map((product: Product) => (
         <a key={product.id} onClick={() => handleToggleModal(product)}>

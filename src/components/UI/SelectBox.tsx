@@ -9,7 +9,7 @@ export const SelectBox = ({
     handleChangeCategory(event.target.value)
   }
   return (
-    <div className='absolute top-0 right-24'>
+    <div className='absolute top-6 right-24'>
       <label
         htmlFor='categories'
         className='block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400'

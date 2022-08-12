@@ -5,6 +5,7 @@ import { ProductItem } from './components/ProductItem'
 import { SelectBox } from './components/UI/SelectBox'
 import { ProductDetailModal } from './components/Modal/ProductDetailModal'
 import { ProductFormModal } from './components/Modal/ProductFormModal'
+import { Loading } from './components/Loading'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -36,15 +37,20 @@ export const App = () => {
 
   const [isEdit, setIsEdit] = useState(false)
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleChangeCategory = (category: string) => {
+    setIsLoading(true)
     if (category === 'all') {
       axiosClient.get('https://fakestoreapi.com/products').then((res) => {
+        setIsLoading(false)
         setProducts(res.data)
       })
     } else {
       axiosClient
         .get('https://fakestoreapi.com/products/category/' + category)
         .then((res) => {
+          setIsLoading(false)
           setProducts(res.data)
         })
     }
@@ -65,30 +71,67 @@ export const App = () => {
   }
 
   useEffect(() => {
+    setIsLoading(true)
     axiosClient.get('https://fakestoreapi.com/products').then((res) => {
+      setIsLoading(false)
       setProducts(res.data)
     })
 
     axiosClient
       .get('https://fakestoreapi.com/products/categories')
       .then((res) => {
+        setIsLoading(false)
         setCategories(res.data)
       })
   }, [])
 
   return (
-    <div className='relative grid grid-cols-4 gap-4 m-6'>
-      <p className='col-span-4 text-center text-2xl font-semibold text-orange-800'>
-        Products List
-      </p>
-      <div className='col-span-4 text-center'>
+    <div className='relative w-full h-full'>
+      <div
+        className={`absolute w-screen h-screen z-10 bg-neutral-500/50 ${
+          isLoading ? '' : 'hidden'
+        }`}
+      >
+        <Loading />
+      </div>
+      <div className='relative grid grid-cols-4 gap-4 p-6'>
+        <p className='col-span-4 text-center text-2xl font-semibold text-orange-800'>
+          Products List
+        </p>
+        <div className='col-span-4 text-center'>
+          <button
+            className='rounded-full p-1 hover:bg-green-100'
+            onClick={openAddModal}
+          >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              className='h-6 w-6'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M12 4v16m8-8H4'
+              />
+            </svg>
+          </button>
+        </div>
+
+        <SelectBox
+          categories={categories}
+          handleChangeCategory={handleChangeCategory}
+        />
+
         <button
-          className='rounded-full p-1 hover:bg-green-100'
-          onClick={openAddModal}
+          className='absolute top-14 right-8 hover:bg-gray-100 rounded'
+          onClick={logout}
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
-            className='h-6 w-6'
+            className='h-8 w-8'
             fill='none'
             viewBox='0 0 24 24'
             stroke='currentColor'
@@ -97,50 +140,25 @@ export const App = () => {
             <path
               strokeLinecap='round'
               strokeLinejoin='round'
-              d='M12 4v16m8-8H4'
+              d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
             />
           </svg>
         </button>
+
+        {products.map((product: Product) => (
+          <a key={product.id} onClick={() => handleToggleModal(product)}>
+            <ProductItem productItem={product} />
+          </a>
+        ))}
+
+        <ProductDetailModal
+          isShow={showModal}
+          onClose={() => setShowModal(false)}
+          product={product}
+        />
+
+        <ProductFormModal isEdit={isEdit} onClose={() => setIsEdit(false)} />
       </div>
-
-      <SelectBox
-        categories={categories}
-        handleChangeCategory={handleChangeCategory}
-      />
-
-      <button
-        className='absolute top-8 right-0 hover:bg-gray-100 rounded'
-        onClick={logout}
-      >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          className='h-8 w-8'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke='currentColor'
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
-          />
-        </svg>
-      </button>
-
-      {products.map((product: Product) => (
-        <a key={product.id} onClick={() => handleToggleModal(product)}>
-          <ProductItem productItem={product} />
-        </a>
-      ))}
-
-      <ProductDetailModal
-        isShow={showModal}
-        onClose={() => setShowModal(false)}
-        product={product}
-      />
-
-      <ProductFormModal isEdit={isEdit} onClose={() => setIsEdit(false)} />
     </div>
   )
 }

@@ -1,7 +1,35 @@
-import { Rating } from './UI/Rating'
-import { Product } from '../type/product.type'
+import { Rating } from '../UI/Rating'
+import { Product } from '../../type/product.type'
 
-export const ProductItem = ({ productItem }: { productItem: Product }) => {
+import { axiosClient } from '../../service/axiosClient'
+
+import { useNavigate } from 'react-router-dom'
+
+export const ProductItem = ({
+  productItem,
+  setIsLoading,
+}: {
+  productItem: Product
+  setIsLoading: Function
+}) => {
+  const navigate = useNavigate()
+
+  const goToEditPage = (e: any) => {
+    e.stopPropagation()
+    navigate(`/editProduct/${productItem.id}`, { replace: true })
+  }
+
+  const handleDeleteProduct = (e: any) => {
+    e.stopPropagation()
+    setIsLoading(true)
+    axiosClient
+      .delete(`https://fakestoreapi.com/products/${productItem.id}`)
+      .then((res) => {
+        console.log('deleted', res)
+        setIsLoading(false)
+      })
+  }
+
   return (
     <div className='relative rounded p-2 hover:border-2 border-rose-500 cursor-pointer'>
       <p
@@ -34,7 +62,10 @@ export const ProductItem = ({ productItem }: { productItem: Product }) => {
       <p className='mx-3 text-sm'>Sold: {productItem.rating?.count}</p>
 
       <div className='absolute bottom-1 right-1'>
-        <button className='rounded-full mx-1 p-1 hover:bg-yellow-100'>
+        <button
+          className='rounded-full mx-1 p-1 hover:bg-yellow-100'
+          onClick={goToEditPage}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             className='h-6 w-6'
@@ -50,7 +81,10 @@ export const ProductItem = ({ productItem }: { productItem: Product }) => {
             />
           </svg>
         </button>
-        <button className='rounded-full mx-1 p-1 hover:bg-red-100'>
+        <button
+          className='rounded-full mx-1 p-1 hover:bg-red-100'
+          onClick={handleDeleteProduct}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             className='h-6 w-6'

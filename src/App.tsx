@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { axiosClient } from './service/axiosClient'
-import { ProductItem } from './components/ProductItem'
+import { ProductItem } from './components/Product/ProductItem'
 import { SelectBox } from './components/UI/SelectBox'
 import { ProductDetailModal } from './components/Modal/ProductDetailModal'
-import { ProductFormModal } from './components/Modal/ProductFormModal'
 import { Loading } from './components/Loading'
 
 import { useNavigate } from 'react-router-dom'
@@ -35,8 +34,6 @@ export const App = () => {
 
   const [showModal, setShowModal] = useState(false)
 
-  const [isEdit, setIsEdit] = useState(false)
-
   const [isLoading, setIsLoading] = useState(false)
 
   const handleChangeCategory = (category: string) => {
@@ -61,13 +58,13 @@ export const App = () => {
     setShowModal(true)
   }
 
-  const openAddModal = () => {
-    setIsEdit(true)
-  }
-
   const logout = () => {
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'
     navigate('/login', { replace: true })
+  }
+
+  const goToAddPage = () => {
+    navigate('/addProduct', { replace: true })
   }
 
   useEffect(() => {
@@ -101,7 +98,7 @@ export const App = () => {
         <div className='col-span-4 text-center'>
           <button
             className='rounded-full p-1 hover:bg-green-100'
-            onClick={openAddModal}
+            onClick={goToAddPage}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -147,7 +144,7 @@ export const App = () => {
 
         {products.map((product: Product) => (
           <a key={product.id} onClick={() => handleToggleModal(product)}>
-            <ProductItem productItem={product} />
+            <ProductItem productItem={product} setIsLoading={setIsLoading} />
           </a>
         ))}
 
@@ -156,8 +153,6 @@ export const App = () => {
           onClose={() => setShowModal(false)}
           product={product}
         />
-
-        <ProductFormModal isEdit={isEdit} onClose={() => setIsEdit(false)} />
       </div>
     </div>
   )

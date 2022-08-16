@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { App } from './App'
 import './index.css'
 import { Login } from './routes/Login'
+import { ProductForm } from './components/Product/ProductForm'
 
 import { useAuth } from './hooks/useAuth'
 
@@ -22,6 +23,22 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           element={
             <RequireAuth>
               <App />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='addProduct'
+          element={
+            <RequireAuth>
+              <ProductForm />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path='editProduct/:id'
+          element={
+            <RequireAuth>
+              <ProductForm />
             </RequireAuth>
           }
         />
